@@ -1,13 +1,14 @@
+#!/usr/bin/env python
+
 import numpy as np
 import matplotlib.pyplot as plt
-import Trajectory
-import Estimator
-import Controller
-import Dynamics 
+from Controller import Controller
+from Constants import Constants
 
 def main():
 
-	ctrl = Controller()
+	c = Constants()
+	ctrl = Controller(Kp=c.KP_DEFAULT, Kd=c.KD_DEFAULT)
 
 if __name__ == '__main__':
 	main()

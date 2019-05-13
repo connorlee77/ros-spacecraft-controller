@@ -1,0 +1,4 @@
+<launch>
+	<!-- Launches the controller -->
+	<node name="spacecraft_controller" pkg="spacecraft_controller" type="main.py" required="true"/>
+</launch>

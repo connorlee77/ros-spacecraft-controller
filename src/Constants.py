@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 class Constants:
 
 	def __init__(self):

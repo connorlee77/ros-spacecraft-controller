@@ -1,6 +1,7 @@
 import numpy as np
 import roslib
 import rospy
+#!/usr/bin/env python
 import Constants
 
 from spacecraft_controller.msg import Thrusters8 as Thrusters8
@@ -14,12 +15,12 @@ class Controller:
     def __init__(self, Kp=np.eye(3), Kd=np.eye(3)):
         self.Kp = Kp
         self.Kd = Kd
-        self.newControl = MESSAGE_TYPE()
-        self.prevX = np.zeros(1,3)
+        self.newControl = Thrusters8
+        self.prevX = np.zeros((1,3))
         self.elapsedtime = 0
-        #self.trajectory = ...
+
         # initialize
-        rospy.init_node('SpacecraftController', anonymous=False)
+        rospy.init_node('spacecraftcontroller', anonymous=False)
         
         # Current state subscriber
         self.subNavdata = rospy.Subscriber('/vicon/'+controller_name + '/' + controller_name, TransformStamped, self.u)
