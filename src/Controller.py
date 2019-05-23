@@ -43,7 +43,7 @@ class Controller:
             # Current state subscriber
             self.subNavdata = rospy.Subscriber('/vicon/sc3_105/sc3_105', TransformStamped, self.u)
             # Controls input publisher
-            self.publisher = rospy.Publisher('connor', Thrusters8, queue_size=1)
+            self.publisher = rospy.Publisher('Thrusters8', Thrusters8, queue_size=1)
             # Wait until we receive messages to process in the callback functions
             rospy.spin()
 
@@ -70,7 +70,7 @@ class Controller:
         u = -self.Kd.dot(xdot - xdotd) - self.Kp.dot(x - xd)
         F = np.linalg.pinv(self.H).dot(np.linalg.inv(self.T(heading))).dot(u);
 
-        self.updateThruster8(F)
+        self.updateThruster8(7.863*F/(1.0/self.dt)-0.009727)
         self.prevX = x
         
         if self.ROS:
