@@ -28,8 +28,8 @@ class Controller:
         self.prevX = np.zeros((3,1))
         self.trajectory = trajectory
         
-        L = 1
-        b = 1
+        L = 0.2
+        b = 0.2
         self.H = np.array([
             [-1, -1, 0, 0, 1, 1, 0, 0], 
             [0, 0, -1, -1, 0, 0, 1, 1],
@@ -39,7 +39,8 @@ class Controller:
             ### ROS ###
             # initialize
             rospy.init_node('spacecraft_controller', anonymous=False)
-
+            self.time = rospy.Time()
+            self.starttime = self.time.now()
             # Current state subscriber
             self.subNavdata = rospy.Subscriber('/vicon/sc3_105/sc3_105', TransformStamped, self.u)
             # Controls input publisher
@@ -63,9 +64,15 @@ class Controller:
         roll, pitch, yaw = euler_from_quaternion(xrot)
         
         # TODO: desired trajectory
-        xd = self.trajectory['xd']
-        xdotd = self.trajectory['xdotd']
-        
+        if self.ROS:
+            current_time = (self.time.now() - self.starttime).to_sec()
+            rospy.loginfo(current_time)
+            xd = self.trajectory['xd']
+            xdotd = self.trajectory['xdotd']
+        else:
+            xd = self.trajectory['xd']
+            xdotd = self.trajectory['xdotd']
+
         heading = yaw
         u = -self.Kd.dot(xdot - xdotd) - self.Kp.dot(x - xd)
         F = np.linalg.pinv(self.H).dot(np.linalg.inv(self.T(heading))).dot(u);
@@ -109,5 +116,6 @@ def test():
     data.transform.rotation.z = 1
     data.transform.rotation.w = 1
     ctrl.u(data)
+
 if __name__ == "__main__":
     test()
