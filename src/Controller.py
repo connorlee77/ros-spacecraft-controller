@@ -66,7 +66,6 @@ class Controller:
         # TODO: desired trajectory
         if self.ROS:
             current_time = (self.time.now() - self.starttime).to_sec()
-            rospy.loginfo(current_time)
             xd = self.trajectory['xd']
             xdotd = self.trajectory['xdotd']
         else:
