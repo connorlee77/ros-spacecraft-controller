@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import numpy as np
-import roslib
-import rospy
 import Constants
 
+import roslib
+import rospy
 from spacecraft_controller.msg import Thrusters8 as Thrusters8
 from geometry_msgs.msg import TransformStamped as TransformStamped
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
@@ -66,8 +66,9 @@ class Controller:
         # TODO: desired trajectory
         if self.ROS:
             current_time = (self.time.now() - self.starttime).to_sec()
-            xd = self.trajectory['xd']
-            xdotd = self.trajectory['xdotd']
+            index = current_time / 10
+            xd = self.trajectory['xd'][:,index]
+            xdotd = self.trajectory['xdotd'][:,index]
         else:
             xd = self.trajectory['xd']
             xdotd = self.trajectory['xdotd']
