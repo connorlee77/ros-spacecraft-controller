@@ -1,0 +1,20 @@
+{
+    "wheels": [
+        {
+            "drive_sn": "2080378A3548",
+            "axis_no":  0
+        },
+        {
+            "drive_sn": "2080378A3548",
+            "axis_no":  1
+        },
+        {
+            "drive_sn": "2061378C3548",
+            "axis_no":  0
+        },
+        {
+            "drive_sn": "2061378C3548",
+            "axis_no":  1
+        }
+    ]
+}

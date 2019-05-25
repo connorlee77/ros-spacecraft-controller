@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 import numpy as np
-import Constants
-
 import roslib
 import rospy
+import Constants
+import serial
+import math
+import time
+
+from std_msgs.msg import Bool, String, Float32, Float64
 from spacecraft_controller.msg import Thrusters8 as Thrusters8
 from geometry_msgs.msg import TransformStamped as TransformStamped
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
@@ -40,11 +44,12 @@ class Controller:
             # initialize
             rospy.init_node('spacecraft_controller', anonymous=False)
             self.time = rospy.Time()
-            self.starttime = self.time.now()
+            self.starttime = None
+            
             # Current state subscriber
-            self.subNavdata = rospy.Subscriber('/vicon/sc3_105/sc3_105', TransformStamped, self.u)
+            self.subNavdata = rospy.Subscriber('/vicon/sc3_105/sc3_105', TransformStamped, self.u, queue_size=5)
             # Controls input publisher
-            self.publisher = rospy.Publisher('Thrusters8', Thrusters8, queue_size=1)
+            self.publisher = rospy.Publisher('sc4/thruster_msg/', Thrusters8, queue_size=5)
             # Wait until we receive messages to process in the callback functions
             rospy.spin()
 
@@ -65,14 +70,19 @@ class Controller:
         
         # TODO: desired trajectory
         if self.ROS:
+            if self.starttime is None:
+                self.starttime = self.time.now()
+            
             current_time = (self.time.now() - self.starttime).to_sec()
-            index = current_time / 10
-            xd = self.trajectory['xd'][:,index]
-            xdotd = self.trajectory['xdotd'][:,index]
+            index = int(np.ceil(current_time / 10))
+            rospy.loginfo(current_time)
+            rospy.loginfo(index)
+            xd = self.trajectory['xd'][:,[index]]
+            xdotd = self.trajectory['xdotd'][:,[index]]
         else:
             xd = self.trajectory['xd']
             xdotd = self.trajectory['xdotd']
-
+            
         heading = yaw
         u = -self.Kd.dot(xdot - xdotd) - self.Kp.dot(x - xd)
         F = np.linalg.pinv(self.H).dot(np.linalg.inv(self.T(heading))).dot(u);
@@ -116,6 +126,7 @@ def test():
     data.transform.rotation.z = 1
     data.transform.rotation.w = 1
     ctrl.u(data)
+    print ctrl.control
 
 if __name__ == "__main__":
     test()
